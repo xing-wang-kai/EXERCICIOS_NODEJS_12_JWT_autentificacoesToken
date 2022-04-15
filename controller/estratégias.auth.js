@@ -52,7 +52,7 @@ export const privateRouterLocal = (req, res, next) => {
         }
     })(req, res, next)
 }
-export const privateRouterBaerer = (req, res, next)=> {
+export const privateRouterBaerer =  (req, res, next)=> {
     passport.authenticate('bearer', {session:false}, (erro, usuario, info)=>{
         if(erro){
             res.status(404).json({message: erro.message});
@@ -60,7 +60,7 @@ export const privateRouterBaerer = (req, res, next)=> {
             if(!usuario){
                 res.status(401).json({message: `usuário não localizado`})
             }else{
-
+                req.use = usuario
                 return next();
             }
         }
