@@ -1,3 +1,5 @@
+<div style="background-color:white; padding: 0.5rem; border-color: gray; font-family: cursive;">
+
 # :o: JWT, BCRYPT autentificações com tokens
 
 nota: :coffee: Este curso pertence a formação "Node.js Com Express", ele é o sexto de 8 cursos 
@@ -150,3 +152,88 @@ Desta forma o usuário só acessará a rota se estiver logado...
 Uma vez criado a estratégia o login e o acessos do usuário então podemos construir as condições para o middleware que usaremos nas rotas para isso digitamos...
 
 
+```javascript
+export const privateRouterLocal = (req, res, next) => {
+    passport.authenticate('local', {session: false}, (erro, usuario, info)=>{
+        if(erro){
+            res.status(409).json({message: erro.message});
+        }else{
+            if(!usuario){
+                res.status(401).json({message: `Usuário não localizado!`});
+            }else{
+                req.user = usuario;
+                return next();
+            }
+        }
+    })(req, res, next)
+}
+export const privateRouterBaerer =  (req, res, next)=> {
+    passport.authenticate('bearer', {session:false}, (erro, usuario, info)=>{
+        if(erro){
+            res.status(404).json({message: erro.message});
+        }else{
+            if(!usuario){
+                res.status(401).json({message: `usuário não localizado`})
+            }else{
+                req.use = usuario
+                return next();
+            }
+        }
+    })(req, res, next);
+}
+```
+
+Com os middleware criados os mesmos devem ser adicionados as rotas como middleware para que o código consiga executar e rodar as ações...
+
+### :o: CRIANDO UMA BLACKLIST
+
+A blacklist é uma lista de validação de tokens, nesta lista ficará todos tokens usados na aplicação no momento do login. caso o usuário faça o logout mesmo que o token seja válido ele será removido desta lista e então o usuário não consigira usar aquele token, para usar um novo token será necessário fazer o login novamente....
+
+Uma vez com o REDIS instalado na maquina vamos criar uma instancia para ele na pasta REDIS no projeto com o nome de blacklist..
+
+nesta pasta será iniciado o comandos para o redis..
+
+```javascript
+import redis from 'redis';
+export default redis.createClient({prefix: "blacklist: "})
+```
+
+no arquivo CustomExpress será criado importado o blacklist.js
+na pasta Redis criamos um novo arquivo que se chama handle-blacklist
+e importamos o blacklist...
+
+```javascript
+import blacklist from './blacklist.js';
+import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
+import { createHash } from 'crypto';
+
+const setAsync = promisify(blacklist.set).bind(blacklist);
+const existsAsync = promisify(blacklist.exists).bind(blacklist);
+
+const gerarTokenHash = (token) => {
+    return createHash('sha256')
+           .update(token)
+           .digest('hex');
+}
+
+export default {
+    adicionar: async (token) => {
+        const dataExp = jwt.decode(token).exp;
+        const tokenHash = gerarTokenHash(token);
+        await setAsync(tokenHash, "");
+        blacklist.expireat(tokenHash, dataExp);
+    },
+    verificar: async (token) => {
+        const tokenHash = gerarTokenHash(token);
+        const res = existsAsync(tokenHash);
+        return res === 1;
+    }
+
+}
+
+}
+```
+
+
+</div>

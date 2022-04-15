@@ -3,6 +3,7 @@ import instanciar from '../models/database.js'
 import chalk from 'chalk';
 import cors from 'cors'
 import routes from '../routes/index.js'
+import '../REDIS/blacklist.js'
 
 const app = express();
 app.use(express.json());
