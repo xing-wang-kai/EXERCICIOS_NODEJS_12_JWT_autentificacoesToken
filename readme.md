@@ -1,4 +1,4 @@
-# :large_green_circle: JWT, BCRYPT autentificações com tokens;
+# :o: JWT, BCRYPT autentificações com tokens
 
 Quando criamos um sistema que possua login e senha e queremos
 proteger a integridade dos dados do nossos usuários contrar
@@ -6,7 +6,7 @@ alguns ataque oriundos que podem comprometer nosso sistema
 precisamos usar algumas ferrametas para manter nossa aplicação 
 segura.
 
-## :large_green_circle: BCRYPT;
+## :o:  BCRYPT
 
 Colocar uma senha no banco de dados sem sua devida cryptografia
 pode ser perigoso, por isso a bibliotec bcrypt ajuda a desenvolver
@@ -38,7 +38,7 @@ Seu retorno será um booleam, na função bcrypt compare recebe a senha
 que o usuário digitou no sistema e a cryptografia da senha já salva
 ....
 
-## :large_green_circle: PASSPORT
+## :o: PASSPORT
 
 - [x] npm install PASSPORT
 - [x] npm install passport-local
